@@ -21,13 +21,14 @@ if __name__ == '__main__':
     p = Path(args.file)
 
     bd_file = p.parent/'mk_bd.tcl'
-    if not bd_file.exists():
-
+    ip_file = p.parent/'mk_ip.tcl'
+    if ip_file.exists():
         # check if in IP folder of a project
         pnew = p.parent
         pnew = pnew.parent
         bd_file = p.parent/'mk_bd.tcl'
 
+    vivado_version = None
     if not bd_file.exists():
         vivado_version = input('Enter Vivado shell version 20xx.x: ')
     else:
@@ -38,6 +39,8 @@ if __name__ == '__main__':
             if srch in r:
                 s = r.split(srch)
                 vivado_version = s[1].rstrip()
+        if vivado_version is None:
+            vivado_version = input('Enter Vivado shell version 20xx.x: ')
 
     s = vivado_version.split('.')
     ver_maj, ver_min = s[0], s[1]
