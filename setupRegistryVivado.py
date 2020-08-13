@@ -15,7 +15,7 @@ ConEmu Vivado (folder)
 import os
 import winreg as reg
 import ctypes, sys
-from pathlib import Path
+import pathlib
 
 def is_admin():
     try:
@@ -55,25 +55,27 @@ def deleteSubkey(key0, key1, key2=""):
 
 if is_admin() == False:
     print("not admin")
+
+    print()
+
     # Re-run the program with admin rights
-    cf = Path.cwd()/__file__
+    cf = pathlib.Path.cwd()/__file__
     print(cf)
     print("runas", r'cmd.exe', r'/C {} {} & pause'.format(sys.executable, cf))
     print(ctypes.windll.shell32.ShellExecuteW(None, "runas", r'cmd.exe', r'/C {} {} & pause'.format(sys.executable, cf), None, 1))
 else:
     # Code of your program here
     print("admin")
+    cwd = pathlib.Path(__file__).parent.absolute()
+    print(cwd)
 
     # names of all overlay icons that shall be boosted:
     # right click list [['menu_name', 'command_path', 'icon_path']]
     rcl = []
-    #rcl.append([' Edit with NeoVim', r'"C:\tools\neovim\Neovim\bin\nvim-qt.exe" "%1"', r'"C:\tools\neovim\Neovim\bin\nvim-qt.exe"'])
-    #rcl.append([' Edit with VSCode', r'"C:\Program Files\Microsoft VS Code\Code.exe" "%1"', r'"C:\Program Files\Microsoft VS Code\Code.exe"'])
-    #rcl.append(['Vivado2016_3 Shell Here', r'"C:\tools\cmdermini\vendor\conemu-maximus5\ConEmu64.exe" -here -run {Vivado2016_3} -cur_console:n', r'"C:\tools\cmdermini\icons\cmder_blue.ico"'])
-    #rcl.append(['Vivado2017_3 Shell Here', r'"C:\tools\cmdermini\vendor\conemu-maximus5\ConEmu64.exe" -here -run {Vivado2017_3} -cur_console:n', r'"C:\tools\cmdermini\icons\cmder_blue.ico"'])
-    #rcl.append(['Power Shell Here', r'"C:\tools\cmdermini\vendor\conemu-maximus5\ConEmu64.exe" -here -run {Powershell::PowerShell as Admin} -cur_console:d:"%V"', r'"C:\tools\cmdermini\icons\cmder_red.ico"'])
-    rcl.append(['Vivado Launch', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe  -Command python c:\Projects\helpers\VivadoLauncher.py --file "%1"', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe'])
-    rcl.append(['Vivado Shell', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoExit -Command python "C:\Projects\helpers\vivadoShell.py" --file "%1"', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe'])
+    #rcl.append(['Vivado Launch', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe  -Command python c:\Projects\helpers\VivadoLauncher.py --file "%1"', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe'])
+    rcl.append(['Vivado Launch', f'powershell.exe  -Command python "{str(cwd / "VivadoLauncher.py")}" --file "%1"', f'powershell.exe'])
+    #rcl.append(['Vivado Shell', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe -NoExit -Command python "C:\Projects\helpers\vivadoShell.py" --file "%1"', r'C:\\Windows\\system32\\WindowsPowerShell\\v1.0\\powershell.exe'])
+    rcl.append(['Vivado Shell', f'powershell.exe -NoExit -Command python "{str(cwd / "vivadoShell.py")}" --file "%1"', f'powershell.exe'])
 
     with reg.OpenKey(reg.HKEY_CLASSES_ROOT, r'*\shell') as base:
         for r in rcl:
